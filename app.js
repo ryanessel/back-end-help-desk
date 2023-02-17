@@ -1,3 +1,5 @@
+const cors = require("cors");
+
 // ℹ️ Gets access to environment variables/settings
 // https://www.npmjs.com/package/dotenv
 require("dotenv").config();
@@ -13,6 +15,22 @@ const app = express();
 
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
+
+let whitelist = [process.env.ORIGIN];
+let corsOptions = {
+    origin: (origin, callback)=>{
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },credentials: true
+}
+
+app.use(cors(corsOptions));
+
+
+
 
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");
